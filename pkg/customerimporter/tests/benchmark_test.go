@@ -35,9 +35,9 @@ func BenchmarkCountCustomerByDomainFromCSVExampleData(b *testing.B) {
 		for i := 0; i < b.N; i++ {
 			reader, err := os.Open("data/customers.csv")
 			require.NoError(b, err, "Error during opening example data")
-
-			b.ResetTimer()
+			b.StartTimer()
 			_, err = customerimporter.CountCustomerByDomainFromCSV(reader)
+			b.StopTimer()
 			require.NoError(b, err)
 		}
 	})

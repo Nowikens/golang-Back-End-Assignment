@@ -76,7 +76,6 @@ func TestCountCustomerByDomain(t *testing.T) {
 			require.NoError(t, err, "CountCustomerByDomain should return no errors")
 
 			require.Equal(t, tC.output, data, "Data should be sorted and properly counted")
-
 		})
 	}
 
@@ -86,8 +85,37 @@ func TestCountCustomerByDomainFromCSV(t *testing.T) {
 	testCases := []struct {
 		desc      string
 		csvReader io.Reader
+		output    customerimporter.EmailDomainCustomerCountList
 		err       error
 	}{
+		{
+			desc: "happy case",
+			csvReader: getCSVData(
+				t,
+				[][]string{
+					getProperColumns(),
+					{
+						"a", "b", "a@x.com", "Female", "127.0.0.1",
+					},
+					{
+						"c", "d", "a@y.com", "Female", "127.0.0.1",
+					},
+					{
+						"e", "f", "a@x.com", "Female", "127.0.0.1",
+					},
+				},
+			),
+			output: customerimporter.EmailDomainCustomerCountList{
+				{
+					EmailDomain:   "x.com",
+					CustomerCount: 2,
+				},
+				{
+					EmailDomain:   "y.com",
+					CustomerCount: 1,
+				},
+			},
+		},
 		{
 			desc:      "too few columns",
 			csvReader: getTooFewColumnsCSVData(t),
@@ -116,9 +144,12 @@ func TestCountCustomerByDomainFromCSV(t *testing.T) {
 	}
 	for _, tC := range testCases {
 		t.Run(tC.desc, func(t *testing.T) {
-			_, err := customerimporter.CountCustomerByDomainFromCSV(tC.csvReader)
+			result, err := customerimporter.CountCustomerByDomainFromCSV(tC.csvReader)
 			if tC.err != nil {
 				require.ErrorIs(t, err, tC.err)
+			}
+			if tC.output != nil {
+				require.Equal(t, tC.output, result)
 			}
 		})
 	}
