@@ -6,8 +6,10 @@ type EmailDomainCustomerCount struct {
 	CustomerCount int
 }
 
+// EmailDomainCustomerCountList created for later sorting EmailDomainCustomerCount by domain
 type EmailDomainCustomerCountList []EmailDomainCustomerCount
 
+// Below methods o satisfy sort.Interface
 func (edccList EmailDomainCustomerCountList) Len() int {
 	return len(edccList)
 }

@@ -38,6 +38,7 @@ func CountCustomerByDomain(customers []Customer) (EmailDomainCustomerCountList, 
 	return result, nil
 }
 
+// CountCustomerByDomainFromCSV is a wrapper aroung CountCustomerByDomain designed specifically for CSV format.
 func CountCustomerByDomainFromCSV(r io.Reader) ([]EmailDomainCustomerCount, error) {
 	customers, err := getCustomers(r)
 	if err != nil {
