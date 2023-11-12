@@ -13,16 +13,17 @@ import (
 )
 
 func BenchmarkCountCustomerByDomainFromCSV(b *testing.B) {
-	sizes := []int{100, 1000, 10_000, 100_000, 1000_000}
+	sizes := []int{100, 1000, 10_000, 10_000, 1000_000}
 
 	for _, size := range sizes {
 		b.Run(fmt.Sprintf("Size: %d", size), func(b *testing.B) {
-			reader := generateCSVReader(b, size)
-
-			b.ResetTimer()
 
 			for i := 0; i < b.N; i++ {
-				customerimporter.CountCustomerByDomainFromCSV(reader)
+				reader := generateCSVReader(b, size)
+				b.StartTimer()
+				_, err := customerimporter.CountCustomerByDomainFromCSV(reader)
+				b.StopTimer()
+				require.NoError(b, err)
 			}
 		})
 	}
@@ -30,13 +31,14 @@ func BenchmarkCountCustomerByDomainFromCSV(b *testing.B) {
 func BenchmarkCountCustomerByDomainFromCSVExampleData(b *testing.B) {
 
 	b.Run("Example data", func(b *testing.B) {
-		reader, err := os.Open("data/customers.csv")
-		require.NoError(b, err, "Error during opening example data")
-
-		b.ResetTimer()
 
 		for i := 0; i < b.N; i++ {
-			customerimporter.CountCustomerByDomainFromCSV(reader)
+			reader, err := os.Open("data/customers.csv")
+			require.NoError(b, err, "Error during opening example data")
+
+			b.ResetTimer()
+			_, err = customerimporter.CountCustomerByDomainFromCSV(reader)
+			require.NoError(b, err)
 		}
 	})
 }
@@ -44,15 +46,12 @@ func BenchmarkCountCustomerByDomainFromCSVExampleData(b *testing.B) {
 func generateCSVReader(b *testing.B, size int) io.Reader {
 	b.Helper()
 	records := [][]string{}
+	records = append(records, getProperColumns())
 	// Generate CSV data with 5 columns
 	for i := 0; i < size; i++ {
 		records = append(
 			records,
-			[]string{"first_name"},
-			[]string{fmt.Sprintf("last_name%d", i)},
-			[]string{fmt.Sprintf("email.x%d.com", i)},
-			[]string{"gender"},
-			[]string{"127.0.0.1"},
+			[]string{"x", fmt.Sprintf("y%d", i), fmt.Sprintf("x@example%d.com", i), "gender", "127.0.0.1"},
 		)
 	}
 
