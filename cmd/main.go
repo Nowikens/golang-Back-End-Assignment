@@ -1,7 +1,34 @@
 package main
 
-import "fmt"
+import (
+	"flag"
+	"fmt"
+	"log/slog"
+	"os"
+
+	"github.com/nowikens/customer_importer/pkg/customerimporter"
+	"github.com/nowikens/customer_importer/pkg/customerimporter/app"
+)
 
 func main() {
-	fmt.Println("Hello world")
+	filePath := flag.String("file", "customers.csv", "File with customers data to process")
+	flag.Parse()
+	a := app.App{
+		Logger: slog.Default(),
+	}
+
+	file, err := os.Open(*filePath)
+	if err != nil {
+		a.Logger.Error("error during opening a file: %s", file)
+		return
+	}
+	defer file.Close()
+
+	result, err := customerimporter.CountCustomerByDomainFromCSV(&a, file)
+	if err != nil {
+		a.Logger.Error("err during reading csv")
+		return
+	}
+	fmt.Printf("%+v", result)
+
 }
