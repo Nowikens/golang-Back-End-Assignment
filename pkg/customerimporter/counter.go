@@ -6,11 +6,13 @@ import (
 	"net/mail"
 	"sort"
 	"strings"
+
+	"github.com/nowikens/customer_importer/pkg/customerimporter/app"
 )
 
 // CountCustomerByDomain gets list of customer objects, counts for each domain how many
 // customers it has and sorts it alphabetically
-func CountCustomerByDomain(customers []Customer) (EmailDomainCustomerCountList, error) {
+func CountCustomerByDomain(app *app.App, customers []Customer) (EmailDomainCustomerCountList, error) {
 	result := make(EmailDomainCustomerCountList, 0)
 
 	m := make(map[string]int, 0)
@@ -39,12 +41,12 @@ func CountCustomerByDomain(customers []Customer) (EmailDomainCustomerCountList, 
 }
 
 // CountCustomerByDomainFromCSV is a wrapper aroung CountCustomerByDomain designed specifically for CSV format.
-func CountCustomerByDomainFromCSV(r io.Reader) (EmailDomainCustomerCountList, error) {
-	customers, err := getCustomers(r)
+func CountCustomerByDomainFromCSV(a *app.App, r io.Reader) (EmailDomainCustomerCountList, error) {
+	customers, err := getCustomers(a, r)
 	if err != nil {
 		return nil, fmt.Errorf("error when processing CSV: %w", err)
 	}
-	return CountCustomerByDomain(customers)
+	return CountCustomerByDomain(a, customers)
 
 }
 

@@ -7,6 +7,8 @@ import (
 	"io"
 	"net/mail"
 	"strings"
+
+	"github.com/nowikens/customer_importer/pkg/customerimporter/app"
 )
 
 const (
@@ -14,7 +16,6 @@ const (
 )
 
 var (
-	ErrBadColumns = errors.New("bad columns")
 	ErrBadRow     = errors.New("bad row")
 	ErrBadEmail   = errors.New("bad email")
 
@@ -24,17 +25,10 @@ var (
 )
 
 // getCustomers processes csv file, validates columns rows and emails, and creates list of Customer objects
-func getCustomers(r io.Reader) ([]Customer, error) {
+func getCustomers(a *app.App, r io.Reader) ([]Customer, error) {
 	customers := []Customer{}
 
 	scanner := bufio.NewScanner(r)
-
-	// ommit the first line with column names when processing
-	scanner.Scan()
-	columns := scanner.Text()
-	if err := validateColumnsRow(columns); err != nil {
-		return nil, err
-	}
 
 	// processing customers data
 	for scanner.Scan() {
@@ -42,25 +36,21 @@ func getCustomers(r io.Reader) ([]Customer, error) {
 
 		rowData, err := getRowData(row)
 		if err != nil {
+			a.Logger.Warn("", err)
+			// when structure is wrong there is not much we can do
 			return nil, err
 		}
 
 		email, err := getEmailFromRow(rowData)
 		if err != nil {
-			return nil, err
+			a.Logger.Warn("", err)
+			// when couldn't process email, log error and proceed to next row
+			continue
 		}
 
 		customers = append(customers, Customer{email})
 	}
 	return customers, nil
-}
-
-// validateColumnsRow validates first CSV's row with column names
-func validateColumnsRow(columnsString string) error {
-	if columnsString != ProperColumnsString {
-		return fmt.Errorf("%w; %s, got %q", ErrBadColumns, ExpectedColumns, columnsString)
-	}
-	return nil
 }
 
 // getRowData validates row, and returns splited row data
