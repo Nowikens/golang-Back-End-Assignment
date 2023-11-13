@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log/slog"
 	"net/mail"
 	"strings"
 
@@ -16,8 +17,8 @@ const (
 )
 
 var (
-	ErrBadRow     = errors.New("bad row")
-	ErrBadEmail   = errors.New("bad email")
+	ErrBadRow   = errors.New("bad row")
+	ErrBadEmail = errors.New("bad email")
 
 	ProperColumns = strings.Split(ProperColumnsString, ",")
 
@@ -30,20 +31,30 @@ func getCustomers(a *app.App, r io.Reader) ([]Customer, error) {
 
 	scanner := bufio.NewScanner(r)
 
+	lineCounter := 0
 	// processing customers data
 	for scanner.Scan() {
+		lineCounter++
 		row := scanner.Text()
 
 		rowData, err := getRowData(row)
 		if err != nil {
-			a.Logger.Warn("", err)
+			a.Logger.Warn(
+				"Error while reading row",
+				slog.Int("line", lineCounter),
+				slog.Any("error", err),
+			)
 			// when structure is wrong there is not much we can do
 			return nil, err
 		}
 
 		email, err := getEmailFromRow(rowData)
 		if err != nil {
-			a.Logger.Warn("", err)
+			a.Logger.Warn(
+				"Error while reading email",
+				slog.Int("line", lineCounter),
+				slog.Any("error ", err),
+			)
 			// when couldn't process email, log error and proceed to next row
 			continue
 		}
