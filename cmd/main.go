@@ -19,7 +19,10 @@ func main() {
 
 	file, err := os.Open(*filePath)
 	if err != nil {
-		a.Logger.Error("error during opening a file: %s", file)
+		a.Logger.Error(
+			"error during opening a file",
+			slog.String("path", *filePath),
+		)
 		return
 	}
 	defer file.Close()
