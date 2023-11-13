@@ -7,7 +7,7 @@ import (
 
 	"github.com/nowikens/customer_importer/pkg/customerimporter"
 	"github.com/nowikens/customer_importer/pkg/customerimporter/app"
-	"github.com/stretchr/testify/require"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestCountCustomerByDomain(t *testing.T) {
@@ -78,9 +78,9 @@ func TestCountCustomerByDomain(t *testing.T) {
 	for _, tC := range testCases {
 		t.Run(tC.desc, func(t *testing.T) {
 			data, err := customerimporter.CountCustomerByDomain(&a, tC.input)
-			require.NoError(t, err, "CountCustomerByDomain should return no errors")
+			assert.NoError(t, err, "CountCustomerByDomain should return no errors")
 
-			require.Equal(t, tC.output, data, "Data should be sorted and properly counted")
+			assert.Equal(t, tC.output, data, "Data should be sorted and properly counted")
 		})
 	}
 
@@ -139,10 +139,10 @@ func TestCountCustomerByDomainFromCSV(t *testing.T) {
 		t.Run(tC.desc, func(t *testing.T) {
 			result, err := customerimporter.CountCustomerByDomainFromCSV(&a, tC.csvReader)
 			if tC.err != nil {
-				require.ErrorIs(t, err, tC.err)
+				assert.ErrorIs(t, err, tC.err)
 			}
 			if tC.output != nil {
-				require.Equal(t, tC.output, result)
+				assert.Equal(t, tC.output, result)
 			}
 		})
 	}
