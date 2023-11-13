@@ -20,7 +20,7 @@ func main() {
 	file, err := os.Open(*filePath)
 	if err != nil {
 		a.Logger.Error(
-			"error during opening a file",
+			"error during opening the file",
 			slog.String("path", *filePath),
 		)
 		return
