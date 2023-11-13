@@ -51,11 +51,11 @@ func BenchmarkCountCustomerByDomainFromCSVExampleData(b *testing.B) {
 	})
 }
 
+// generateCSVReader generates io.reader with dummy data with specified length
 func generateCSVReader(b *testing.B, size int) io.Reader {
 	b.Helper()
 	records := [][]string{}
 	records = append(records, getProperColumns())
-	// Generate CSV data with 5 columns
 	for i := 0; i < size; i++ {
 		records = append(
 			records,
