@@ -9,7 +9,7 @@ import (
 	"net/mail"
 	"strings"
 
-	"github.com/nowikens/customer_importer/pkg/customerimporter/app"
+	"github.com/nowikens/customer_importer/pkg/app"
 )
 
 const (

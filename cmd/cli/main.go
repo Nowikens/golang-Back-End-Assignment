@@ -7,7 +7,7 @@ import (
 	"os"
 
 	"github.com/nowikens/customer_importer/pkg/customerimporter"
-	"github.com/nowikens/customer_importer/pkg/customerimporter/app"
+	"github.com/nowikens/customer_importer/pkg/app"
 )
 
 func main() {

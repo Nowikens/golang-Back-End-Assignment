@@ -7,7 +7,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/nowikens/customer_importer/pkg/customerimporter/app"
+	"github.com/nowikens/customer_importer/pkg/app"
 )
 
 // CountCustomerByDomain gets list of customer objects, counts for each domain how many
