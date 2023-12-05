@@ -44,8 +44,8 @@ func getCustomers(a *app.App, r io.Reader) ([]Customer, error) {
 				slog.Int("line", lineCounter),
 				slog.Any("error", err),
 			)
-			// when structure is wrong there is not much we can do
-			return nil, err
+			// when couldn't process row, log error and proceed to next row
+			continue
 		}
 
 		email, err := getEmailFromRow(rowData)
