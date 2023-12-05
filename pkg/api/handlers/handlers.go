@@ -1,8 +1,9 @@
 package handlers
 
 import (
-	"encoding/json"
 	"net/http"
+
+	"github.com/go-chi/render"
 
 	"github.com/nowikens/customer_importer/pkg/api/response"
 )
@@ -14,18 +15,6 @@ func HandleEmails(w http.ResponseWriter, r *http.Request) {
 		ID: 1,
 	}
 
-	jsonResponse, err := json.Marshal(response_data)
-	if err != nil {
-		http.Error(w, "Failed to marshal JSON", http.StatusInternalServerError)
-		return
-	}
-
-	w.WriteHeader(http.StatusCreated)
-	w.Header().Set("Content-Type", "application/json")
-
-	_, err = w.Write(jsonResponse)
-	if err != nil {
-		http.Error(w, "Failed to write response", http.StatusInternalServerError)
-		return
-	}
+	render.JSON(w, r, response_data)
+	render.Status(r, http.StatusCreated)
 }
