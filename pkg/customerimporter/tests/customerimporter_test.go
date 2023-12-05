@@ -125,14 +125,14 @@ func TestCountCustomerByDomainFromCSV(t *testing.T) {
 			},
 		},
 		{
-			desc:      "too few columns",
+			desc:      "too few columns doesn't prevent finishing",
 			csvReader: getTooFewColumnsCSVData(t),
-			err:       customerimporter.ErrBadRow,
+			err:       nil,
 		},
 		{
-			desc:      "too many columns",
+			desc:      "too many columns doesn't prevent finishing",
 			csvReader: getTooManyColumnsCSVData(t),
-			err:       customerimporter.ErrBadRow,
+			err:       nil,
 		},
 	}
 	for _, tC := range testCases {
