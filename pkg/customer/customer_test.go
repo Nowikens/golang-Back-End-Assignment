@@ -1,12 +1,12 @@
-package customerimporter_test
+package customer_test
 
 import (
 	"io"
 	"log/slog"
 	"testing"
 
-	"github.com/nowikens/customer_importer/pkg/customerimporter"
 	"github.com/nowikens/customer_importer/pkg/app"
+	"github.com/nowikens/customer_importer/pkg/customer"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -16,12 +16,12 @@ func TestCountCustomerByDomain(t *testing.T) {
 	}
 	testCases := []struct {
 		desc   string
-		input  []customerimporter.Customer
-		output customerimporter.EmailDomainCustomerCountList
+		input  []customer.Customer
+		output customer.EmailDomainCustomerCountList
 	}{
 		{
 			desc: "happy case #1",
-			input: []customerimporter.Customer{
+			input: []customer.Customer{
 				{
 					Email: "c@z.com",
 				},
@@ -35,7 +35,7 @@ func TestCountCustomerByDomain(t *testing.T) {
 					Email: "d@x.com",
 				},
 			},
-			output: customerimporter.EmailDomainCustomerCountList{
+			output: customer.EmailDomainCustomerCountList{
 				{
 					EmailDomain:   "x.com",
 					CustomerCount: 2,
@@ -52,7 +52,7 @@ func TestCountCustomerByDomain(t *testing.T) {
 		},
 		{
 			desc: "happy case #2",
-			input: []customerimporter.Customer{
+			input: []customer.Customer{
 				{
 					Email: "b@y.com",
 				},
@@ -63,7 +63,7 @@ func TestCountCustomerByDomain(t *testing.T) {
 					Email: "d@x.com",
 				},
 			},
-			output: customerimporter.EmailDomainCustomerCountList{
+			output: customer.EmailDomainCustomerCountList{
 				{
 					EmailDomain:   "x.com",
 					CustomerCount: 2,
@@ -77,7 +77,7 @@ func TestCountCustomerByDomain(t *testing.T) {
 	}
 	for _, tC := range testCases {
 		t.Run(tC.desc, func(t *testing.T) {
-			data, err := customerimporter.CountCustomerByDomain(&a, tC.input)
+			data, err := customer.CountCustomerByDomain(&a, tC.input)
 			assert.NoError(t, err, "CountCustomerByDomain should return no errors")
 
 			assert.Equal(t, tC.output, data, "Data should be sorted and properly counted")
@@ -93,7 +93,7 @@ func TestCountCustomerByDomainFromCSV(t *testing.T) {
 	testCases := []struct {
 		desc      string
 		csvReader io.Reader
-		output    customerimporter.EmailDomainCustomerCountList
+		output    customer.EmailDomainCustomerCountList
 		err       error
 	}{
 		{
@@ -113,7 +113,7 @@ func TestCountCustomerByDomainFromCSV(t *testing.T) {
 					},
 				},
 			),
-			output: customerimporter.EmailDomainCustomerCountList{
+			output: customer.EmailDomainCustomerCountList{
 				{
 					EmailDomain:   "x.com",
 					CustomerCount: 2,
@@ -137,7 +137,7 @@ func TestCountCustomerByDomainFromCSV(t *testing.T) {
 	}
 	for _, tC := range testCases {
 		t.Run(tC.desc, func(t *testing.T) {
-			result, err := customerimporter.CountCustomerByDomainFromCSV(&a, tC.csvReader)
+			result, err := customer.CountCustomerByDomainFromCSV(&a, tC.csvReader)
 			if tC.err != nil {
 				assert.ErrorIs(t, err, tC.err)
 			}

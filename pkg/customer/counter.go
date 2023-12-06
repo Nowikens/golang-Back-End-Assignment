@@ -1,4 +1,4 @@
-package customerimporter
+package customer
 
 import (
 	"fmt"

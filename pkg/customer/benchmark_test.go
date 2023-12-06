@@ -1,4 +1,4 @@
-package customerimporter_test
+package customer_test
 
 import (
 	"bytes"
@@ -9,8 +9,8 @@ import (
 	"os"
 	"testing"
 
-	"github.com/nowikens/customer_importer/pkg/customerimporter"
 	"github.com/nowikens/customer_importer/pkg/app"
+	"github.com/nowikens/customer_importer/pkg/customer"
 	"github.com/stretchr/testify/require"
 )
 
@@ -27,7 +27,7 @@ func BenchmarkCountCustomerByDomainFromCSV(b *testing.B) {
 			for i := 0; i < b.N; i++ {
 				reader := generateCSVReader(b, size)
 				b.StartTimer()
-				_, err := customerimporter.CountCustomerByDomainFromCSV(&a, reader)
+				_, err := customer.CountCustomerByDomainFromCSV(&a, reader)
 				b.StopTimer()
 				require.NoError(b, err)
 			}
@@ -44,7 +44,7 @@ func BenchmarkCountCustomerByDomainFromCSVExampleData(b *testing.B) {
 			reader, err := os.Open("data/customers.csv")
 			require.NoError(b, err, "Error during opening example data")
 			b.StartTimer()
-			_, err = customerimporter.CountCustomerByDomainFromCSV(&a, reader)
+			_, err = customer.CountCustomerByDomainFromCSV(&a, reader)
 			b.StopTimer()
 			require.NoError(b, err)
 		}

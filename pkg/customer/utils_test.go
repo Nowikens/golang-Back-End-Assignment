@@ -1,4 +1,5 @@
-package customerimporter_test
+package customer_test
+
 
 import (
 	"bytes"

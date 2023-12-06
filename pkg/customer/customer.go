@@ -1,4 +1,4 @@
-package customerimporter
+package customer
 
 // EmailDomainCustomerCount stores email domain, nd how many customers it has
 type EmailDomainCustomerCount struct {

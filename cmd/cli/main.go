@@ -6,8 +6,8 @@ import (
 	"log/slog"
 	"os"
 
-	"github.com/nowikens/customer_importer/pkg/customerimporter"
 	"github.com/nowikens/customer_importer/pkg/app"
+	"github.com/nowikens/customer_importer/pkg/customer"
 )
 
 func main() {
@@ -27,7 +27,7 @@ func main() {
 	}
 	defer file.Close()
 
-	result, err := customerimporter.CountCustomerByDomainFromCSV(&a, file)
+	result, err := customer.CountCustomerByDomainFromCSV(&a, file)
 	if err != nil {
 		a.Logger.Error("err during reading csv")
 		return
