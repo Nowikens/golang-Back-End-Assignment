@@ -134,6 +134,11 @@ func TestCountCustomerByDomainFromCSV(t *testing.T) {
 			csvReader: getTooManyColumnsCSVData(t),
 			err:       nil,
 		},
+		{
+			desc:      "bad email doesn't prevent finishing",
+			csvReader: getBadEmailCSVData(t),
+			err:       nil,
+		},
 	}
 	for _, tC := range testCases {
 		t.Run(tC.desc, func(t *testing.T) {

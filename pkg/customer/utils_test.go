@@ -1,6 +1,5 @@
 package customer_test
 
-
 import (
 	"bytes"
 	"encoding/csv"
@@ -34,30 +33,6 @@ func getTooManyColumnsCSVData(t *testing.T) io.Reader {
 	return getCSVData(t, records)
 }
 
-// getBadColumnsCSVData returns io.reader with bad columns
-func getBadColumnsCSVData(t *testing.T) io.Reader {
-	t.Helper()
-	records := [][]string{
-		{
-			"first_name", "badColumn", "email", "gender", "ip_address",
-		},
-	}
-
-	return getCSVData(t, records)
-}
-
-// getBadRowData returns io.reader with one corrupted row
-func getBadRowData(t *testing.T) io.Reader {
-	t.Helper()
-	records := [][]string{
-		getProperColumns(),
-		{
-			"Mildred", "Hernandez", "Female", "38.194.51.128",
-		},
-	}
-
-	return getCSVData(t, records)
-}
 
 // getBadEmailCSVData returns properly structured data but with wrong email
 func getBadEmailCSVData(t *testing.T) io.Reader {
