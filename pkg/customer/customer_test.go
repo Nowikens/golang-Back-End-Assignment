@@ -5,15 +5,14 @@ import (
 	"log/slog"
 	"testing"
 
-	"github.com/nowikens/customer_importer/pkg/app"
 	"github.com/nowikens/customer_importer/pkg/customer"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestCountCustomerByDomain(t *testing.T) {
-	a := app.App{
-		Logger: slog.Default(),
-	}
+	s := customer.NewCustomerService(
+		slog.Default(),
+	)
 	testCases := []struct {
 		desc   string
 		input  []customer.Customer
@@ -77,19 +76,18 @@ func TestCountCustomerByDomain(t *testing.T) {
 	}
 	for _, tC := range testCases {
 		t.Run(tC.desc, func(t *testing.T) {
-			data, err := customer.CountCustomerByDomain(&a, tC.input)
+			data, err := s.CountCustomerByDomain(tC.input)
 			assert.NoError(t, err, "CountCustomerByDomain should return no errors")
 
 			assert.Equal(t, tC.output, data, "Data should be sorted and properly counted")
 		})
 	}
-
 }
 
 func TestCountCustomerByDomainFromCSV(t *testing.T) {
-	a := app.App{
-		Logger: slog.Default(),
-	}
+	s := customer.NewCustomerService(
+		slog.Default(),
+	)
 	testCases := []struct {
 		desc      string
 		csvReader io.Reader
@@ -142,7 +140,7 @@ func TestCountCustomerByDomainFromCSV(t *testing.T) {
 	}
 	for _, tC := range testCases {
 		t.Run(tC.desc, func(t *testing.T) {
-			result, err := customer.CountCustomerByDomainFromCSV(&a, tC.csvReader)
+			result, err := s.CountCustomerByDomainFromCSV(tC.csvReader)
 			if tC.err != nil {
 				assert.ErrorIs(t, err, tC.err)
 			}

@@ -6,20 +6,18 @@ import (
 	"log/slog"
 	"os"
 
-	"github.com/nowikens/customer_importer/pkg/app"
 	"github.com/nowikens/customer_importer/pkg/customer"
 )
 
 func main() {
 	filePath := flag.String("file", "customers.csv", "File with customers data to process")
 	flag.Parse()
-	a := app.App{
-		Logger: slog.Default(),
-	}
+	logger := slog.Default()
+	s := customer.NewCustomerService(logger)
 
 	file, err := os.Open(*filePath)
 	if err != nil {
-		a.Logger.Error(
+		logger.Error(
 			"error during opening the file",
 			slog.String("path", *filePath),
 		)
@@ -27,9 +25,9 @@ func main() {
 	}
 	defer file.Close()
 
-	result, err := customer.CountCustomerByDomainFromCSV(&a, file)
+	result, err := s.CountCustomerByDomainFromCSV(file)
 	if err != nil {
-		a.Logger.Error("err during reading csv")
+		logger.Error("err during reading csv")
 		return
 	}
 	fmt.Printf("%+v", result)

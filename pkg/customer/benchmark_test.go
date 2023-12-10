@@ -9,17 +9,16 @@ import (
 	"os"
 	"testing"
 
-	"github.com/nowikens/customer_importer/pkg/app"
 	"github.com/nowikens/customer_importer/pkg/customer"
 	"github.com/stretchr/testify/require"
 )
 
 func BenchmarkCountCustomerByDomainFromCSV(b *testing.B) {
 	sizes := []int{100, 1000, 10_000, 10_000, 1000_000}
-	a := app.App{
+	s := customer.NewCustomerService(
 		// turn off logging so it doesn't obscure benchmark's output
-		Logger: slog.New(slog.NewTextHandler(io.Discard, nil)),
-	}
+		slog.New(slog.NewTextHandler(io.Discard, nil)),
+	)
 
 	for _, size := range sizes {
 		b.Run(fmt.Sprintf("Size: %d", size), func(b *testing.B) {
@@ -27,7 +26,7 @@ func BenchmarkCountCustomerByDomainFromCSV(b *testing.B) {
 			for i := 0; i < b.N; i++ {
 				reader := generateCSVReader(b, size)
 				b.StartTimer()
-				_, err := customer.CountCustomerByDomainFromCSV(&a, reader)
+				_, err := s.CountCustomerByDomainFromCSV(reader)
 				b.StopTimer()
 				require.NoError(b, err)
 			}
@@ -35,16 +34,17 @@ func BenchmarkCountCustomerByDomainFromCSV(b *testing.B) {
 	}
 }
 func BenchmarkCountCustomerByDomainFromCSVExampleData(b *testing.B) {
-	a := app.App{
+	s := customer.NewCustomerService(
 		// turn off logging so it doesn't obscure benchmark's output
-		Logger: slog.New(slog.NewTextHandler(io.Discard, nil)),
-	}
+		slog.New(slog.NewTextHandler(io.Discard, nil)),
+	)
+
 	b.Run("Example data", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
 			reader, err := os.Open("data/customers.csv")
 			require.NoError(b, err, "Error during opening example data")
 			b.StartTimer()
-			_, err = customer.CountCustomerByDomainFromCSV(&a, reader)
+			_, err = s.CountCustomerByDomainFromCSV(reader)
 			b.StopTimer()
 			require.NoError(b, err)
 		}

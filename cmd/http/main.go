@@ -8,8 +8,8 @@ import (
 	"strconv"
 
 	"github.com/joho/godotenv"
-	"github.com/nowikens/customer_importer/pkg/api/server"
 	"github.com/nowikens/customer_importer/pkg/app"
+	"github.com/nowikens/customer_importer/pkg/customer"
 )
 
 func init() {
@@ -20,15 +20,18 @@ func init() {
 	}
 }
 func main() {
-	a := app.App{
-		Logger: slog.Default(),
-	}
-	s := server.New()
-	s.MountHandlers()
-
 	port, portString := getPortInfo()
-	a.Logger.Info("Starting server", slog.Int("port", port))
-	http.ListenAndServe(portString, s.Router)
+
+	logger := slog.Default()
+	cs := customer.NewCustomerService(logger)
+	a, err := app.New(
+		cs,
+	)
+	if err != nil {
+		panic(err)
+	}
+	logger.Info("Starting server", slog.Int("port", port))
+	http.ListenAndServe(portString, a.GetRouter())
 }
 func getPortInfo() (port int, portString string) {
 	portEnv, ok := os.LookupEnv("APP_PORT")

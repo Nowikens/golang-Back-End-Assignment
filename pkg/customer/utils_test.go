@@ -26,7 +26,7 @@ func getTooManyColumnsCSVData(t *testing.T) io.Reader {
 	t.Helper()
 	records := [][]string{
 		{
-			"first_name", "last_name", "email", "gender", "ip_address", "something", "else",
+			"first_name", "last_name", "email", "gender", "ip_address",
 		},
 	}
 

@@ -8,8 +8,6 @@ import (
 	"log/slog"
 	"net/mail"
 	"strings"
-
-	"github.com/nowikens/customer_importer/pkg/app"
 )
 
 const (
@@ -26,7 +24,7 @@ var (
 )
 
 // getCustomers processes csv file, validates columns rows and emails, and creates list of Customer objects
-func getCustomers(a *app.App, r io.Reader) ([]Customer, error) {
+func getCustomers(r io.Reader, logger *slog.Logger) ([]Customer, error) {
 	customers := []Customer{}
 
 	scanner := bufio.NewScanner(r)
@@ -39,7 +37,7 @@ func getCustomers(a *app.App, r io.Reader) ([]Customer, error) {
 
 		rowData, err := getRowData(row)
 		if err != nil {
-			a.Logger.Warn(
+			logger.Warn(
 				"Error while reading row",
 				slog.Int("line", lineCounter),
 				slog.Any("error", err),
@@ -50,7 +48,7 @@ func getCustomers(a *app.App, r io.Reader) ([]Customer, error) {
 
 		email, err := getEmailFromRow(rowData)
 		if err != nil {
-			a.Logger.Warn(
+			logger.Warn(
 				"Error while reading email",
 				slog.Int("line", lineCounter),
 				slog.Any("error ", err),

@@ -1,10 +1,29 @@
 package app
 
 import (
-	"log/slog"
+	"net/http"
+
+	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/middleware"
+	"github.com/nowikens/customer_importer/pkg/customer"
 )
 
-// App implements simple repository pattern, for injecting logs
 type App struct {
-	Logger *slog.Logger
+	router          *chi.Mux
+	customerService customer.CustomerService
+}
+
+func New(cs customer.CustomerService) (*App, error) {
+	r := chi.NewRouter()
+	r.Use(middleware.Logger)
+
+	return &App{
+		customerService: cs,
+		router:          r,
+	}, nil
+
+}
+
+func (a *App) GetRouter() http.Handler {
+	return a.router
 }
