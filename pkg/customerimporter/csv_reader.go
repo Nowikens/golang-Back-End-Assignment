@@ -1,7 +1,7 @@
 package customerimporter
 
 import (
-	"bufio"
+	"encoding/csv"
 	"errors"
 	"fmt"
 	"io"
@@ -29,15 +29,18 @@ var (
 func getCustomers(a *app.App, r io.Reader) ([]Customer, error) {
 	customers := []Customer{}
 
-	scanner := bufio.NewScanner(r)
+	reader := csv.NewReader(r)
 
 	lineCounter := 0
 	// processing customers data
-	for scanner.Scan() {
+	for {
+		rowData, err := reader.Read()
+		if err == io.EOF {
+			break
+		}
 		lineCounter++
-		row := scanner.Text()
 
-		rowData, err := getRowData(row)
+		err = validateRowData(rowData)
 		if err != nil {
 			a.Logger.Warn(
 				"Error while reading row",
@@ -61,18 +64,17 @@ func getCustomers(a *app.App, r io.Reader) ([]Customer, error) {
 
 		customers = append(customers, Customer{email})
 	}
+
 	return customers, nil
 }
 
-// getRowData validates row, and returns splited row data
-func getRowData(rowString string) ([]string, error) {
-	rowData := strings.Split(rowString, ",")
-
+// validateRowData validates row
+func validateRowData(rowData []string) error {
 	if len(rowData) != len(ProperColumns) {
-		return nil, fmt.Errorf("%w: %s. Got row: %q", ErrBadRow, ExpectedColumns, rowString)
+		return fmt.Errorf("%w: %s. Got row: %q", ErrBadRow, ExpectedColumns, rowData)
 	}
 
-	return rowData, nil
+	return nil
 }
 
 // getEmailFromRow takes splitted row data, searches for email value, validates it and returns it
