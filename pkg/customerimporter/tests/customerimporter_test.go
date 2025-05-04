@@ -2,7 +2,6 @@ package customerimporter_test
 
 import (
 	"io"
-	"log/slog"
 	"testing"
 
 	"github.com/nowikens/customer_importer/pkg/customerimporter"
@@ -10,9 +9,11 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+
+
 func TestCountCustomerByDomain(t *testing.T) {
 	a := app.App{
-		Logger: slog.Default(),
+		Logger: silentLogger,
 	}
 	testCases := []struct {
 		desc   string
@@ -88,7 +89,7 @@ func TestCountCustomerByDomain(t *testing.T) {
 
 func TestCountCustomerByDomainFromCSV(t *testing.T) {
 	a := app.App{
-		Logger: slog.Default(),
+		Logger: silentLogger,
 	}
 	testCases := []struct {
 		desc      string
