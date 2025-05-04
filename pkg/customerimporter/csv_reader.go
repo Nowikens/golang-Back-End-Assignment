@@ -17,8 +17,10 @@ const (
 )
 
 var (
-	ErrBadRow   = errors.New("bad row")
-	ErrBadEmail = errors.New("bad email")
+	ErrBadRow              = errors.New("bad row")
+	ErrBadEmail            = errors.New("bad email")
+	ErrBadHeaders          = errors.New("bad headers")
+	ErrEmailColumnNotFound = errors.New("email column not found")
 
 	ProperColumns = strings.Split(ProperColumnsString, ",")
 
@@ -30,6 +32,25 @@ func getCustomers(a *app.App, r io.Reader) ([]Customer, error) {
 	customers := []Customer{}
 
 	reader := csv.NewReader(r)
+
+	// reading first row which should be headers since we're not assuming email column position
+	headers, err := reader.Read()
+	if err != nil {
+		a.Logger.Error(
+			"Error during reading headers",
+			slog.Any("error", err),
+		)
+		return nil, fmt.Errorf("%w: %w", ErrBadHeaders, err)
+	}
+
+	emailIndex, err := getEmailIndex(headers)
+	if err != nil {
+		a.Logger.Error(
+			"Email column not found",
+			slog.Any("error", err),
+		)
+		return nil, err
+	}
 
 	lineCounter := 0
 	// processing customers data
@@ -51,7 +72,7 @@ func getCustomers(a *app.App, r io.Reader) ([]Customer, error) {
 			continue
 		}
 
-		email, err := getEmailFromRow(rowData)
+		email, err := getEmailFromRow(rowData, emailIndex)
 		if err != nil {
 			a.Logger.Warn(
 				"Error while reading email",
@@ -77,9 +98,9 @@ func validateRowData(rowData []string) error {
 	return nil
 }
 
-// getEmailFromRow takes splitted row data, searches for email value, validates it and returns it
-func getEmailFromRow(rowData []string) (string, error) {
-	email := rowData[2]
+// getEmailFromRow takes splitted row data,  searches for email value, validates it and returns it
+func getEmailFromRow(rowData []string, emailPostition int) (string, error) {
+	email := rowData[emailPostition]
 
 	_, err := mail.ParseAddress(email)
 	if err != nil {
@@ -87,4 +108,15 @@ func getEmailFromRow(rowData []string) (string, error) {
 	}
 
 	return email, nil
+}
+
+// getEmailIndex searches for email column index in headers
+func getEmailIndex(headers []string) (int, error) {
+	for i, h := range headers {
+		if strings.EqualFold(h, "email") {
+			return i, nil
+		}
+	}
+
+	return -1, ErrEmailColumnNotFound
 }

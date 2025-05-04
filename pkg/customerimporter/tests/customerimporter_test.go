@@ -125,6 +125,63 @@ func TestCountCustomerByDomainFromCSV(t *testing.T) {
 			},
 		},
 		{
+			desc: "column order doesn't matter",
+			csvReader: getCSVData(
+				t,
+				[][]string{
+					{
+						"first_name", "last_name", "gender", "ip_address", "email",
+					},
+					{
+						"a", "b", "Female", "127.0.0.1", "a@x.com",
+					},
+					{
+						"c", "d", "Female", "127.0.0.1", "a@y.com",
+					},
+					{
+						"e", "f", "Female", "127.0.0.1", "a@x.com",
+					},
+				},
+			),
+			output: customerimporter.EmailDomainCustomerCountList{
+				{
+					EmailDomain:   "x.com",
+					CustomerCount: 2,
+				},
+				{
+					EmailDomain:   "y.com",
+					CustomerCount: 1,
+				},
+			},
+		},
+		{
+			desc: "'email' header required - headers row exist",
+			csvReader: getCSVData(
+				t,
+				[][]string{
+					{
+						"first_name", "last_name", "gender", "ip_address", "not_an_email",
+					},
+					{
+						"a", "b", "Female", "127.0.0.1", "a@x.com",
+					},
+				},
+			),
+			err: customerimporter.ErrEmailColumnNotFound,
+		},
+		{
+			desc: "'email' header required - headers row not exist",
+			csvReader: getCSVData(
+				t,
+				[][]string{
+					{
+						"a", "b", "Female", "127.0.0.1", "a@x.com",
+					},
+				},
+			),
+			err: customerimporter.ErrEmailColumnNotFound,
+		},
+		{
 			desc:      "too few columns doesn't prevent finishing",
 			csvReader: getTooFewColumnsCSVData(t),
 			err:       nil,
