@@ -9,8 +9,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-
-
 func TestCountCustomerByDomain(t *testing.T) {
 	a := app.App{
 		Logger: silentLogger,
@@ -19,6 +17,7 @@ func TestCountCustomerByDomain(t *testing.T) {
 		desc   string
 		input  []customerimporter.Customer
 		output customerimporter.EmailDomainCustomerCountList
+		err    error
 	}{
 		{
 			desc: "happy case #1",
@@ -75,13 +74,25 @@ func TestCountCustomerByDomain(t *testing.T) {
 				},
 			},
 		},
+		{
+			desc: "bad email",
+			input: []customerimporter.Customer{
+				{
+					Email: "abcds",
+				},
+			},
+			err: customerimporter.ErrInvalidEmail,
+		},
 	}
 	for _, tC := range testCases {
 		t.Run(tC.desc, func(t *testing.T) {
 			data, err := customerimporter.CountCustomerByDomain(&a, tC.input)
-			assert.NoError(t, err, "CountCustomerByDomain should return no errors")
-
-			assert.Equal(t, tC.output, data, "Data should be sorted and properly counted")
+			if tC.err != nil {
+				assert.ErrorIs(t, err, tC.err)
+			}
+			if tC.output != nil {
+				assert.Equal(t, tC.output, data, "Data should be sorted and properly counted")
+			}
 		})
 	}
 

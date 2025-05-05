@@ -1,6 +1,7 @@
 package customerimporter
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"net/mail"
@@ -8,6 +9,11 @@ import (
 	"strings"
 
 	"github.com/nowikens/customer_importer/pkg/customerimporter/app"
+)
+
+var (
+	ErrInvalidEmail        = errors.New("invalid email")
+	ErrNotEnoughEmailParts = errors.New("could not get domain from email")
 )
 
 // CountCustomerByDomain gets list of customer objects, counts for each domain how many
@@ -55,14 +61,14 @@ func getDomainFromEmail(email string) (string, error) {
 	address, err := mail.ParseAddress(email)
 
 	if err != nil {
-		return "", fmt.Errorf("invalid email: %q, %w", email, err)
+		return "", fmt.Errorf("%w: %q, %w", ErrInvalidEmail, email, err)
 	}
 
 	emailParts := strings.Split(address.Address, "@")
 
-	// parsing email through mail.ParseAddress should not let this happen, bu for sanity I'll check it
+	// parsing email through mail.ParseAddress should not let this happen, but for sanity I'll check it
 	if len(emailParts) != 2 {
-		return "", fmt.Errorf("could not get domain from email: %q", email)
+		return "", fmt.Errorf("%w: %q, %w", ErrNotEnoughEmailParts, email, err)
 	}
 	domain := emailParts[1]
 
