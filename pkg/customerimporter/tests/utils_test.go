@@ -19,7 +19,10 @@ func getTooFewColumnsCSVData(t *testing.T) io.Reader {
 	t.Helper()
 	records := [][]string{
 		{
-			"first_name", "last_name", "ip_address",
+			"first_name", "last_name", "email",
+		},
+		{
+			"some_name", "some_last_name", "example@exmaple.com",
 		},
 	}
 
@@ -55,4 +58,23 @@ func getProperColumns() []string {
 	return []string{
 		"first_name", "last_name", "email", "gender", "ip_address",
 	}
+}
+
+// getOneBadEmailRow returns io.reader with bad email in one row
+func getOneBadEmailRow(t *testing.T) io.Reader {
+	t.Helper()
+	records := [][]string{
+		getProperColumns(),
+		{
+			"first_name", "last_name", "email", "gender", "ip_address",
+		},
+		{
+			"Mildred", "Hernandez", "bad_email", "Female", "38.194.51.128",
+		},
+		{
+			"Mildred", "Hernandez", "example@example.com", "Female", "38.194.51.138",
+		},
+	}
+
+	return getCSVData(t, records)
 }

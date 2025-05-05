@@ -93,6 +93,9 @@ func TestCountCustomerByDomain(t *testing.T) {
 			if tC.output != nil {
 				assert.Equal(t, tC.output, data, "Data should be sorted and properly counted")
 			}
+			if tC.err == nil {
+				assert.NoError(t, err)
+			}
 		})
 	}
 
@@ -194,6 +197,16 @@ func TestCountCustomerByDomainFromCSV(t *testing.T) {
 			err: customerimporter.ErrEmailColumnNotFound,
 		},
 		{
+			desc: "empty file returns error - no headers",
+			csvReader: getCSVData(
+				t,
+				[][]string{
+					{},
+				},
+			),
+			err: customerimporter.ErrBadHeaders,
+		},
+		{
 			desc:      "too few columns doesn't prevent finishing",
 			csvReader: getTooFewColumnsCSVData(t),
 			err:       nil,
@@ -203,12 +216,26 @@ func TestCountCustomerByDomainFromCSV(t *testing.T) {
 			csvReader: getTooManyColumnsCSVData(t),
 			err:       nil,
 		},
+		{
+			desc:      "one bad email doesn't prevent finishing rest",
+			csvReader: getOneBadEmailRow(t),
+			err:       nil,
+			output: customerimporter.EmailDomainCustomerCountList{
+				{
+					EmailDomain:   "example.com",
+					CustomerCount: 1,
+				},
+			},
+		},
 	}
 	for _, tC := range testCases {
 		t.Run(tC.desc, func(t *testing.T) {
 			result, err := customerimporter.CountCustomerByDomainFromCSV(&a, tC.csvReader)
 			if tC.err != nil {
 				assert.ErrorIs(t, err, tC.err)
+			}
+			if tC.err == nil {
+				assert.NoError(t, err)
 			}
 			if tC.output != nil {
 				assert.Equal(t, tC.output, result)
