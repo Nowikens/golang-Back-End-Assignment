@@ -1,15 +1,15 @@
 package customerimporter
 
-// EmailDomainCustomerCount stores email domain, nd how many customers it has
+// EmailDomainCustomerCount stores email domain, and how many customers it has
 type EmailDomainCustomerCount struct {
-	EmailDomain   string
-	CustomerCount int
+	EmailDomain   string `json:"email_domain"`
+	CustomerCount int `json:"customer_count"`
 }
 
 // EmailDomainCustomerCountList created for later sorting EmailDomainCustomerCount by domain
 type EmailDomainCustomerCountList []EmailDomainCustomerCount
 
-// Below methods o satisfy sort.Interface
+// Below methods to satisfy sort.Interface
 func (edccList EmailDomainCustomerCountList) Len() int {
 	return len(edccList)
 }

@@ -98,7 +98,6 @@ func TestCountCustomerByDomain(t *testing.T) {
 			}
 		})
 	}
-
 }
 
 func TestCountCustomerByDomainFromCSV(t *testing.T) {
