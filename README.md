@@ -6,9 +6,9 @@
 1. output to console
 ```go run cmd/main.go --file=./customers.csv```
 2. output to file
-```go run cmd/main.go --file=./customers.csv --output=./test.json```
-3. format flag example (currently only json works)
-```go run cmd/main.go --file=./customers.csv --output=./test.json --format=json```
+```go run cmd/main.go --file=./customers.csv --output=./output.json```
+3. format flag example (currently only json supported)
+```go run cmd/main.go --file=./customers.csv --output=./output.json --format=json```
 # Tests
 ```bash
 go test ./...
@@ -31,15 +31,15 @@ go test ./... -bench=. -benchmem
 
 # Changes 2025
 1. Updated go version to 1.24
-2. Replaced bufio with encoding/csv
+2. Replaced `bufio` with `encoding/csv`
 3. Allowed any email column position - this change also made headers line required
 4. New CLI flags
-    - --format - previously it was just printing go's slice of structs, now it's json. JSON is now the only supported and default format but code was written with extending to other formats in mind.
-    - --output - previously output was printed to console, now can be written to file
+    - `--format` - previously it was just printing Go's slice of structs, now it's json. JSON is now the only supported and default format but code was written with extending to other formats in mind.
+    - `--output` - previously output was printed to console, now can be written to a file
 5. Tests
-    - increased code coverage
-    - some minor changes in existing tests to comply with code changes
-6. Created Makefile
-    - one command coverage html report generation
+    - Increased test coverage
+    - Some minor changes in existing tests to comply with code changes
+6. Created `Makefile`
+    - One command to generate coverage html report
     ```make coverage```
-7. Supressed logger output to console while running tests
+7. Suppressed logger output to console while running tests
