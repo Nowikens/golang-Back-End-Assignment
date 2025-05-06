@@ -52,7 +52,7 @@ func getCustomers(a *app.App, r io.Reader) ([]Customer, error) {
 		return nil, err
 	}
 
-	lineCounter := 0
+	lineCounter := 1
 	// processing customers data
 	for {
 		rowData, err := reader.Read()
@@ -104,7 +104,7 @@ func getEmailFromRow(rowData []string, emailPostition int) (string, error) {
 
 	_, err := mail.ParseAddress(email)
 	if err != nil {
-		return "", fmt.Errorf("%w: %q %w", ErrBadEmail, email, err)
+		return "", fmt.Errorf("%w: '%s' %w", ErrBadEmail, email, err)
 	}
 
 	return email, nil
