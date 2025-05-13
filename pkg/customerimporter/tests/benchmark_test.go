@@ -15,7 +15,7 @@ import (
 )
 
 func BenchmarkCountCustomerByDomainFromCSV(b *testing.B) {
-	sizes := []int{100, 1000, 10_000, 10_000, 1000_000}
+	sizes := []int{100, 1000, 10_000, 100_000, 1000_000}
 	a := app.App{
 		// turn off logging so it doesn't obscure benchmark's output
 		Logger: slog.New(slog.NewTextHandler(io.Discard, nil)),
@@ -43,6 +43,7 @@ func BenchmarkCountCustomerByDomainFromCSVExampleData(b *testing.B) {
 		for i := 0; i < b.N; i++ {
 			reader, err := os.Open("data/customers.csv")
 			require.NoError(b, err, "Error during opening example data")
+			defer reader.Close()
 			b.StartTimer()
 			_, err = customerimporter.CountCustomerByDomainFromCSV(&a, reader)
 			b.StopTimer()
